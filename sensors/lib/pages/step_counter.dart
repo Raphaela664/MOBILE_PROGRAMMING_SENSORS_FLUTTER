@@ -5,6 +5,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:decimal/decimal.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class StepsCounter extends StatefulWidget {
   @override
@@ -28,10 +29,20 @@ class _StepsCounterState extends State<StepsCounter> {
   @override
   void initState() {
     super.initState();
+    requestPermission();
     setUpPedometer();
   }
 
+
   late StreamSubscription<StepCount> _subscription;
+   Future<void> requestPermission() async {
+    final PermissionStatus status = await Permission.activityRecognition.request();
+    if (status.isGranted) {
+      // Permission granted, you can now fetch step count data
+    } else {
+      // Permission denied, handle accordingly
+    }
+  }
 
 void setUpPedometer() {
   _subscription = Pedometer.stepCountStream.listen(_onStepCountData,
@@ -188,212 +199,3 @@ Widget _buildCard(String title, String value, Color color) {
   );
 }
 }
-//   Widget build(BuildContext context) {
-//     getBurnedRun();
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Step Counter app'),
-//         backgroundColor: Colors.black54,
-//       ),
-//       body: ListView(
-//         padding: EdgeInsets.all(5.0),
-//         children: <Widget>[
-//           Container(
-//             padding: EdgeInsets.only(top: 10.0),
-//             width: 250,
-//             height: 250,
-//             decoration: BoxDecoration(
-//               gradient: LinearGradient(
-//                 begin: Alignment.bottomCenter,
-//                 end: Alignment.topCenter,
-//                 colors: [Color(0xFFA9F5F2), Color(0xFF01DFD7)],
-//               ),
-//               borderRadius: BorderRadius.circular(27.0),
-//             ),
-//             child: CircularPercentIndicator(
-//               radius: 200.0,
-//               lineWidth: 13.0,
-//               animation: true,
-//               center: Container(
-//                 child: Row(
-//                   crossAxisAlignment: CrossAxisAlignment.center,
-//                   children: <Widget>[
-//                     Container(
-//                       height: 50,
-//                       width: 50,
-//                       padding: EdgeInsets.only(left: 20.0),
-//                       child: Icon(
-//                         FontAwesomeIcons.walking,
-//                         size: 30.0,
-//                         color: Colors.white,
-//                       ),
-//                     ),
-//                     Container(
-//                       child: Text(
-//                         '$_stepCountValue',
-//                         style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 20.0,
-//                             color: Colors.purpleAccent),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               percent: 0.217,
-//               footer: Text(
-//                 "Steps:  $_stepCountValue",
-//                 style: TextStyle(
-//                     fontWeight: FontWeight.bold,
-//                     fontSize: 12.0,
-//                     color: Colors.purple),
-//               ),
-//               circularStrokeCap: CircularStrokeCap.round,
-//               progressColor: Colors.purpleAccent,
-//             ),
-//           ),
-//           Divider(
-//             height: 5.0,
-//           ),
-//           Container(
-//             width: 80,
-//             height: 100,
-//             padding: EdgeInsets.only(left: 25.0, top: 10.0, bottom: 10.0),
-//             color: Colors.transparent,
-//             child: Row(
-//               children: <Widget>[
-//                 Container(
-//                   child: Card(
-//                     child: Container(
-//                       height: 80.0,
-//                       width: 80.0,
-//                       decoration: BoxDecoration(
-//                         image: DecorationImage(
-//                           image: AssetImage("assets/images/distance.png"),
-//                           fit: BoxFit.fitWidth,
-//                           alignment: Alignment.topCenter,
-//                         ),
-//                       ),
-//                       child: Text(
-//                         "$distanceInKm Km",
-//                         textAlign: TextAlign.right,
-//                         style: TextStyle(
-//                             fontWeight: FontWeight.bold, fontSize: 14.0),
-//                       ),
-//                     ),
-//                     color: Colors.white54,
-//                   ),
-//                 ),
-//                 VerticalDivider(
-//                   width: 20.0,
-//                 ),
-//                 Container(
-//                   child: Card(
-//                     child: Container(
-//                       height: 80.0,
-//                       width: 80.0,
-//                       decoration: BoxDecoration(
-//                         image: DecorationImage(
-//                           image: AssetImage("assets/images/burned.png"),
-//                           fit: BoxFit.fitWidth,
-//                           alignment: Alignment.topCenter,
-//                         ),
-//                       ),
-//                     ),
-//                     color: Colors.transparent,
-//                   ),
-//                 ),
-//                 VerticalDivider(
-//                   width: 20.0,
-//                 ),
-//                 Container(
-//                   child: Card(
-//                     child: Container(
-//                       height: 80.0,
-//                       width: 80.0,
-//                       decoration: BoxDecoration(
-//                         image: DecorationImage(
-//                           image: AssetImage("assets/images/step.png"),
-//                           fit: BoxFit.fitWidth,
-//                           alignment: Alignment.topCenter,
-//                         ),
-//                       ),
-//                     ),
-//                     color: Colors.transparent,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           Divider(
-//             height: 2,
-//           ),
-//           Container(
-//             padding: EdgeInsets.only(top: 2.0),
-//             width: 150,
-//             height: 30,
-//             color: Colors.transparent,
-//             child: Row(
-//               children: <Widget>[
-//                 Container(
-//                   padding: EdgeInsets.only(left: 40.0),
-//                   child: Card(
-//                     child: Container(
-//                       child: Text(
-//                         "$distanceInKm Km",
-//                         textAlign: TextAlign.right,
-//                         style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 14.0,
-//                             color: Colors.white),
-//                       ),
-//                     ),
-//                     color: Colors.purple,
-//                   ),
-//                 ),
-//                 VerticalDivider(
-//                   width: 20.0,
-//                 ),
-//                 Container(
-//                   padding: EdgeInsets.only(left: 10.0),
-//                   child: Card(
-//                     child: Container(
-//                       child: Text(
-//                         "$caloriesBurned kCal",
-//                         textAlign: TextAlign.right,
-//                         style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 14.0,
-//                             color: Colors.white),
-//                       ),
-//                     ),
-//                     color: Colors.red,
-//                   ),
-//                 ),
-//                 VerticalDivider(
-//                   width: 5.0,
-//                 ),
-//                 Container(
-//                   padding: EdgeInsets.only(left: 10.0),
-//                   child: Card(
-//                     child: Container(
-//                       child: Text(
-//                         "$_stepCountValue Steps",
-//                         textAlign: TextAlign.right,
-//                         style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 14.0,
-//                             color: Colors.white),
-//                       ),
-//                     ),
-//                     color: Colors.black,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
