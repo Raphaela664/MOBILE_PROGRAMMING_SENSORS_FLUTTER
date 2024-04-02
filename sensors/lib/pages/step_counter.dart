@@ -130,18 +130,12 @@ void _onData(int stepCountValue) async {
           CircularPercentIndicator(
             radius: 100.0,
             lineWidth: 13.0,
-            // animation: true,
-            // center: Icon(
-            //   FontAwesomeIcons.personWalking,
-            //   size: 50.0,
-            //   color: Colors.black,
-            // ),
             animation: true,
-  center: Image.asset(
-    'images/footprint.gif', // Replace this URL with the URL of your GIF
-    width: 90.0,
-    height: 90.0,
-  ),
+            center: Image.asset(
+              'images/footprint.gif', 
+              width: 90.0,
+              height: 90.0,
+            ),
             percent: 0.217,
             footer: Text(
               "Steps: $_stepCountValue",
