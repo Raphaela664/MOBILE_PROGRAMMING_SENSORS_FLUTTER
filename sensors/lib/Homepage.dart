@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sensors/pages/compass.dart';
 import 'package:sensors/pages/gps_tracker.dart';
-import 'package:sensors/pages/light_sensor.dart';
 import 'package:sensors/pages/step_counter.dart';
+import 'package:light_sensor/light_sensor.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -18,18 +19,20 @@ class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
   Uint8List? _image;
   File? selectedImage;
-
+  late final StreamSubscription<int> listen;
+  
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final List<Widget> _pages = [
     StepsCounter(),
     CompassApp(),
     GPStracker(),
-    LightSensor(),
+    
   ];
 
   @override
   void initState() {
+    listen = LightSensor.
     super.initState();
   }
 
