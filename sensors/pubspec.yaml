@@ -48,12 +48,14 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   flutter_local_notifications: ^9.9.1
   google_maps_flutter: ^2.5.3
-  
+  fl_chart: 
+  flutter_svg: ^2.0.5
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -80,6 +82,10 @@ flutter:
   assets:
     - images/footprint.gif
     - images/compass.png
+    - images/burn.png
+    - images/steps.png
+    - images/distance.png
+    - images/sleep.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
