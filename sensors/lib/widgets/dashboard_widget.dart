@@ -1,7 +1,5 @@
 import 'package:sensors/util/responsive.dart';
 import 'package:sensors/widgets/activity_details_card.dart';
-import 'package:sensors/widgets/bar_graph_widget.dart';
-import 'package:sensors/widgets/header_widget.dart';
 import 'package:sensors/widgets/line_chart_card.dart';
 import 'package:sensors/widgets/summary_widget.dart';
 import 'package:flutter/material.dart';

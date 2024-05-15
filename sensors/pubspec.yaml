@@ -46,7 +46,7 @@ dependencies:
   flutter_compass: ^0.8.0
   location: ^5.0.3
   flutter_polyline_points: ^2.0.0
-  flutter_local_notifications: ^9.9.1
+  flutter_local_notifications: ^17.1.2
   google_maps_flutter: ^2.5.3
   fl_chart: 
   flutter_svg: ^2.0.5

@@ -1,11 +1,11 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:sensors/const/constant.dart';
+import 'package:sensors/main.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -95,12 +95,12 @@ class _MapPageState extends State<MapPage> {
       );
       const NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
-      // await flutterLocalNotificationsPlugin.show(
-      //   0,
-      //   'Hello!',
-      //   'Inside Geographical Boundaries of Kigali',
-      //   platformChannelSpecifics,
-      // );
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Hello!',
+        'Inside Geographical Boundaries of Kigali',
+        platformChannelSpecifics,
+      );
       print('Inside geofence notification sent');
       _notificationSentInSide = true;
       _notificationSentOutSide = false;
@@ -118,12 +118,12 @@ class _MapPageState extends State<MapPage> {
       );
       const NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
-      // await flutterLocalNotificationsPlugin.show(
-      //   0,
-      //   'Hello!',
-      //   'Outside Geographical Boundaries of Kigali',
-      //   platformChannelSpecifics,
-      // );
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Hello!',
+        'Outside Geographical Boundaries of Kigali',
+        platformChannelSpecifics,
+      );
       print('Outside geofence notification sent');
       _notificationSentOutSide = true;
       _notificationSentInSide = false;
@@ -132,7 +132,8 @@ class _MapPageState extends State<MapPage> {
 
   void _createGeofence() {
     // Define the boundaries for the larger geofence around Kigali
-    List<LatLng> kigaliBoundaries = [
+    List<LatLng> HomeBoundaries = [
+      
       LatLng(-1.9740, 30.0274), // Northwest corner
       LatLng(-1.9740, 30.1300), // Northeast corner
       LatLng(-1.8980, 30.1300), // Southeast corner
@@ -143,7 +144,7 @@ class _MapPageState extends State<MapPage> {
     PolygonId polygonId = PolygonId('kigali');
     Polygon polygon = Polygon(
       polygonId: polygonId,
-      points: kigaliBoundaries,
+      points: SchoolBoundaries,
       strokeWidth: 2,
       strokeColor: Colors.blue,
       fillColor: Colors.blue.withOpacity(0.3),
@@ -319,3 +320,5 @@ class _MapPageState extends State<MapPage> {
     });
   }
 }
+
+

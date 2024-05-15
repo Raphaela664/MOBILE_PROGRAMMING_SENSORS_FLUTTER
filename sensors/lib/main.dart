@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sensors/Homepage.dart';
 
-void main() {
+Future<void> main() async {
   runApp(MyApp());
   // checkPermissions();
+  await initNotifications();
 }
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
+Future<void> initNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse:
+        (NotificationResponse notificationResponse) async {},
+  );
+}
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,10 +36,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// Future<void> checkPermissions() async {
-//   var status = await Permission.locationWhenInUse.status;
-//   if (!status.isGranted) {
-//     await Permission.locationWhenInUse.request();
-//   }
-// }
