@@ -16,14 +16,11 @@ class DashboardWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18),
         child: Column(
           children: [
-            const SizedBox(height: 18),
-            const HeaderWidget(),
+          
             const SizedBox(height: 18),
             const ActivityDetailsCard(),
             const SizedBox(height: 18),
             const LineChartCard(),
-            const SizedBox(height: 18),
-            const BarGraphCard(),
             const SizedBox(height: 18),
             if (Responsive.isTablet(context)) const SummaryWidget(),
           ],

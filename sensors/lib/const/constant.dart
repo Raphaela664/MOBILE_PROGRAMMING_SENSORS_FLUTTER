@@ -7,3 +7,5 @@ const backgroundColor = Color(0xFF15131C);
 const selectionColor = Color(0xFF88B2AC);
 
 const defaultPadding = 20.0;
+
+const String GOOGLE_MAPS_API_KEY = 'AIzaSyC-oe6fItIpDaUkVuI-MEEdo6zZBqpcpOg';

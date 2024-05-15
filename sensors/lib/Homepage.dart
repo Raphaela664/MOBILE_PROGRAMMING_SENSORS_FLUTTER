@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sensors/main_screen.dart';
+import 'package:sensors/motion_detector.dart';
 import 'package:sensors/pages/compass.dart';
 import 'package:sensors/pages/map_utils.dart';
 import 'package:sensors/pages/step_counter.dart';
@@ -22,14 +23,15 @@ class _HomepageState extends State<Homepage> {
   late final StreamSubscription<int> listen;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
-  // Current brightness level
+  //Current brightness level;
   double _currentLuxValue = 0.0;
   Brightness _brightness = Brightness.light;
 
   final List<Widget> _pages = [
     MainScreen(),
+    MotionDetector(),
     StepsCounterPage(),
-    CompassPage(),
+    //CompassPage(),
     MapPage(),
   ];
 
@@ -91,19 +93,19 @@ Widget buildBottomNavigationBar() {
         tabs: [
           GButton(
             icon: Icons.home,
-            text: 'Steps Counter',
+            text: 'Dashboard',
           ),
           GButton(
-            icon: Icons.calculate,
-            text: 'Compass App',
+            icon: Icons.circle,
+            text: 'Motion Detector',
           ),
           GButton(
-            icon: Icons.inbox,
-            text: 'Gps tracker',
+            icon: Icons.compass_calibration,
+            text: 'Compass',
           ),
           GButton(
-            icon: Icons.notifications,
-            text: 'Light Sensor',
+            icon: Icons.location_city,
+            text: 'GPS',
           ),
         ],
         selectedIndex: _selectedIndex,

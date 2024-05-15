@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:sensors/pages/consts.dart';
 import 'package:location/location.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:sensors/const/constant.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -13,16 +15,19 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Location _locationController = new Location();
-
+  Location _locationController = Location();
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
-
+  LatLng _kigaliCenter =
+      LatLng(-1.9441, 30.0619); // Coordinates for Kigali center
   static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
   static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
-  LatLng? _currentP = null;
-
+  LatLng? _currentP;
   Map<PolylineId, Polyline> polylines = {};
+  Map<PolygonId, Polygon> _polygons = {};
+  StreamSubscription<LocationData>? _locationSubscription;
+  bool _notificationSentOutSide = false;
+  bool _notificationSentInSide = false;
 
   @override
   void initState() {
@@ -34,10 +39,18 @@ class _MapPageState extends State<MapPage> {
             }),
       },
     );
+    _createGeofence();
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel(); // Cancel location updates subscription
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: _currentP == null
           ? const Center(
@@ -47,9 +60,10 @@ class _MapPageState extends State<MapPage> {
               onMapCreated: ((GoogleMapController controller) =>
                   _mapController.complete(controller)),
               initialCameraPosition: CameraPosition(
-                target: _pGooglePlex,
+                target: _kigaliCenter,
                 zoom: 13,
               ),
+              polygons: Set<Polygon>.of(_polygons.values),
               markers: {
                 Marker(
                   markerId: MarkerId("_currentLocation"),
@@ -70,6 +84,133 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  void _triggerInSideNotification() async {
+    if (!_notificationSentInSide) {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'Map_channel', // Change this to match your channel ID
+        'Map Notifications', // Replace with your own channel name
+        importance: Importance.max,
+        priority: Priority.high,
+      );
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+      // await flutterLocalNotificationsPlugin.show(
+      //   0,
+      //   'Hello!',
+      //   'Inside Geographical Boundaries of Kigali',
+      //   platformChannelSpecifics,
+      // );
+      print('Inside geofence notification sent');
+      _notificationSentInSide = true;
+      _notificationSentOutSide = false;
+    }
+  }
+
+  void _triggerOutSideNotification() async {
+    if (!_notificationSentOutSide) {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'Map_channel', // Change this to match your channel ID
+        'Map Notifications', // Replace with your own channel name
+        importance: Importance.max,
+        priority: Priority.high,
+      );
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+      // await flutterLocalNotificationsPlugin.show(
+      //   0,
+      //   'Hello!',
+      //   'Outside Geographical Boundaries of Kigali',
+      //   platformChannelSpecifics,
+      // );
+      print('Outside geofence notification sent');
+      _notificationSentOutSide = true;
+      _notificationSentInSide = false;
+    }
+  }
+
+  void _createGeofence() {
+    // Define the boundaries for the larger geofence around Kigali
+    List<LatLng> kigaliBoundaries = [
+      LatLng(-1.9740, 30.0274), // Northwest corner
+      LatLng(-1.9740, 30.1300), // Northeast corner
+      LatLng(-1.8980, 30.1300), // Southeast corner
+      LatLng(-1.8980, 30.0274), // Southwest corner
+    ];
+
+    // Create a polygon to represent the geofence boundaries
+    PolygonId polygonId = PolygonId('kigali');
+    Polygon polygon = Polygon(
+      polygonId: polygonId,
+      points: kigaliBoundaries,
+      strokeWidth: 2,
+      strokeColor: Colors.blue,
+      fillColor: Colors.blue.withOpacity(0.3),
+    );
+
+    // Add the polygon to the map
+    setState(() {
+      _polygons[polygonId] = polygon;
+    });
+
+    // Start location updates subscription to monitor device's location
+    _startLocationUpdates();
+  }
+
+  void _startLocationUpdates() async {
+    _locationSubscription = _locationController.onLocationChanged
+        .listen((LocationData currentLocation) {
+      // Check if the device's location is inside or outside the geofence
+      bool insideGeofence = _isLocationInsideGeofence(
+          currentLocation.latitude!, currentLocation.longitude!);
+
+      if (insideGeofence && !_notificationSentInSide) {
+        _triggerInSideNotification();
+        _notificationSentInSide = true;
+        _notificationSentOutSide = false;
+      } else if (!insideGeofence && !_notificationSentOutSide) {
+        _triggerOutSideNotification();
+        _notificationSentOutSide = true;
+        _notificationSentInSide = false;
+      }
+    });
+  }
+
+  bool _isLocationInsideGeofence(double latitude, double longitude) {
+    // Check if the provided location is inside the geofence boundaries
+    bool isInside = false;
+    List<LatLng> kigaliBoundaries = [
+      LatLng(-1.9740, 30.0274),
+      LatLng(-1.9740, 30.1300),
+      LatLng(-1.8980, 30.1300),
+      LatLng(-1.8980, 30.0274),
+    ];
+
+    // Algorithm to determine if a point is inside a polygon
+    int i, j = kigaliBoundaries.length - 1;
+    for (i = 0; i < kigaliBoundaries.length; i++) {
+      if ((kigaliBoundaries[i].latitude < latitude &&
+                  kigaliBoundaries[j].latitude >= latitude ||
+              kigaliBoundaries[j].latitude < latitude &&
+                  kigaliBoundaries[i].latitude >= latitude) &&
+          (kigaliBoundaries[i].longitude <= longitude ||
+              kigaliBoundaries[j].longitude <= longitude)) {
+        if (kigaliBoundaries[i].longitude +
+                (latitude - kigaliBoundaries[i].latitude) /
+                    (kigaliBoundaries[j].latitude -
+                        kigaliBoundaries[i].latitude) *
+                    (kigaliBoundaries[j].longitude -
+                        kigaliBoundaries[i].longitude) <
+            longitude) {
+          isInside = !isInside;
+        }
+      }
+      j = i;
+    }
+    return isInside;
+  }
+
   Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
     CameraPosition _newCameraPosition = CameraPosition(
@@ -86,10 +227,11 @@ class _MapPageState extends State<MapPage> {
     PermissionStatus _permissionGranted;
 
     _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
+    if (!_serviceEnabled) {
       _serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
+      if (!_serviceEnabled) {
+        return;
+      }
     }
 
     _permissionGranted = await _locationController.hasPermission();
@@ -100,15 +242,48 @@ class _MapPageState extends State<MapPage> {
       }
     }
 
-    _locationController.onLocationChanged
+    _locationSubscription = _locationController.onLocationChanged
         .listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
-        setState(() {
-          _currentP =
-              LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          _cameraToPosition(_currentP!);
-        });
+        LatLng newLocation =
+            LatLng(currentLocation.latitude!, currentLocation.longitude!);
+
+        // Update the marker to the new location
+        updateMarkerAndCircle(newLocation);
+
+        // Optionally, keep track of the path by adding to your polyline
+        addLocationToPolyline(newLocation);
+
+        _cameraToPosition(newLocation);
+      }
+    });
+  }
+
+  void updateMarkerAndCircle(LatLng newLocation) {
+    setState(() {
+      _currentP = newLocation;
+      // Update your marker or create a new one if needed
+    });
+  }
+
+  void addLocationToPolyline(LatLng newLocation) {
+    setState(() {
+      // Check if polyline exists, if not create one
+      if (polylines.containsKey(PolylineId("path"))) {
+        final polyline = polylines[PolylineId("path")]!;
+        final updatedPoints = List<LatLng>.from(polyline.points)
+          ..add(newLocation);
+        polylines[PolylineId("path")] =
+            polyline.copyWith(pointsParam: updatedPoints);
+      } else {
+        // Create new polyline if it doesn't exist
+        polylines[PolylineId("path")] = Polyline(
+          polylineId: PolylineId("path"),
+          color: Colors.blue,
+          points: [newLocation],
+          width: 5,
+        );
       }
     });
   }
