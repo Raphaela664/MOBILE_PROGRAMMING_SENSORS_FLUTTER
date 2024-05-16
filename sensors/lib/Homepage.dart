@@ -3,12 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:sensors/main_screen.dart';
+
 import 'package:sensors/motion_detector.dart';
 import 'package:sensors/pages/compass.dart';
 import 'package:sensors/pages/map_utils.dart';
 import 'package:sensors/pages/step_counter.dart';
 import 'package:light_sensor/light_sensor.dart';
+
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -24,14 +25,13 @@ class _HomepageState extends State<Homepage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   //Current brightness level;
-  double _currentLuxValue = 0.0;
+   double _currentLuxValue = 0.0;
   Brightness _brightness = Brightness.light;
 
   final List<Widget> _pages = [
-    MainScreen(),
     MotionDetector(),
     StepsCounterPage(),
-    //CompassPage(),
+    CompassPage(),
     MapPage(),
   ];
 

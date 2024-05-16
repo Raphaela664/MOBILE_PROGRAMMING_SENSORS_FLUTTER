@@ -7,6 +7,7 @@ import 'package:sensors/main.dart';
 
 class StepsCounterPage extends StatefulWidget {
   const StepsCounterPage();
+  
 
   @override
   _StepsCounterPageState createState() => _StepsCounterPageState();
@@ -15,7 +16,7 @@ class _StepsCounterPageState extends State<StepsCounterPage> {
   late Stream<StepCount> _stepCountStream;
   late Stream<PedestrianStatus> _pedestrianStatusStream;
   int _steps = 0; // Variable to hold the number of steps
-  String _status = 'Unknown'; // Variable to hold the pedestrian status
+  String _status = 'Start Walking'; // Variable to hold the pedestrian status
 
   @override
   void initState() {

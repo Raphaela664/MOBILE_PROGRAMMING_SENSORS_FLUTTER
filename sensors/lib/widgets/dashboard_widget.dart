@@ -1,3 +1,4 @@
+import 'package:sensors/pages/step_counter.dart';
 import 'package:sensors/util/responsive.dart';
 import 'package:sensors/widgets/activity_details_card.dart';
 import 'package:sensors/widgets/line_chart_card.dart';
@@ -16,9 +17,9 @@ class DashboardWidget extends StatelessWidget {
           children: [
           
             const SizedBox(height: 18),
-            const ActivityDetailsCard(),
+            ActivityDetailsCard(),
             const SizedBox(height: 18),
-            const LineChartCard(),
+             LineChartCard(),
             const SizedBox(height: 18),
             if (Responsive.isTablet(context)) const SummaryWidget(),
           ],

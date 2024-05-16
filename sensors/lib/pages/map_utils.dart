@@ -97,8 +97,8 @@ class _MapPageState extends State<MapPage> {
           NotificationDetails(android: androidPlatformChannelSpecifics);
       await flutterLocalNotificationsPlugin.show(
         0,
-        'Hello!',
-        'Inside Geographical Boundaries of Kigali',
+        'Map',
+        'Get things done! You are in your work environment',
         platformChannelSpecifics,
       );
       print('Inside geofence notification sent');
@@ -120,8 +120,8 @@ class _MapPageState extends State<MapPage> {
           NotificationDetails(android: androidPlatformChannelSpecifics);
       await flutterLocalNotificationsPlugin.show(
         0,
-        'Hello!',
-        'Outside Geographical Boundaries of Kigali',
+        'Map',
+        'Your are outside your work area',
         platformChannelSpecifics,
       );
       print('Outside geofence notification sent');
@@ -132,19 +132,19 @@ class _MapPageState extends State<MapPage> {
 
   void _createGeofence() {
     // Define the boundaries for the larger geofence around Kigali
-    List<LatLng> HomeBoundaries = [
+    List<LatLng> WorkBoundaries = [
       
-      LatLng(-1.9740, 30.0274), // Northwest corner
-      LatLng(-1.9740, 30.1300), // Northeast corner
-      LatLng(-1.8980, 30.1300), // Southeast corner
-      LatLng(-1.8980, 30.0274), // Southwest corner
+      LatLng(-1.94506, 30.05878),
+      LatLng(-1.94851, 30.06041), 
+      LatLng(-1.95125, 30.05341), 
+      //LatLng(-1.8980, 30.0274), // Southwest corner
     ];
 
     // Create a polygon to represent the geofence boundaries
     PolygonId polygonId = PolygonId('kigali');
     Polygon polygon = Polygon(
       polygonId: polygonId,
-      points: SchoolBoundaries,
+      points: WorkBoundaries,
       strokeWidth: 2,
       strokeColor: Colors.blue,
       fillColor: Colors.blue.withOpacity(0.3),
@@ -181,28 +181,28 @@ class _MapPageState extends State<MapPage> {
   bool _isLocationInsideGeofence(double latitude, double longitude) {
     // Check if the provided location is inside the geofence boundaries
     bool isInside = false;
-    List<LatLng> kigaliBoundaries = [
-      LatLng(-1.9740, 30.0274),
-      LatLng(-1.9740, 30.1300),
-      LatLng(-1.8980, 30.1300),
-      LatLng(-1.8980, 30.0274),
+    List<LatLng> WorkBoundaries = [
+       LatLng(-1.94506, 30.05878), 
+      LatLng(-1.94851, 30.06041), 
+      LatLng(-1.95125, 30.05341),
+    //  LatLng(-1.8980, 30.0274),
     ];
 
     // Algorithm to determine if a point is inside a polygon
-    int i, j = kigaliBoundaries.length - 1;
-    for (i = 0; i < kigaliBoundaries.length; i++) {
-      if ((kigaliBoundaries[i].latitude < latitude &&
-                  kigaliBoundaries[j].latitude >= latitude ||
-              kigaliBoundaries[j].latitude < latitude &&
-                  kigaliBoundaries[i].latitude >= latitude) &&
-          (kigaliBoundaries[i].longitude <= longitude ||
-              kigaliBoundaries[j].longitude <= longitude)) {
-        if (kigaliBoundaries[i].longitude +
-                (latitude - kigaliBoundaries[i].latitude) /
-                    (kigaliBoundaries[j].latitude -
-                        kigaliBoundaries[i].latitude) *
-                    (kigaliBoundaries[j].longitude -
-                        kigaliBoundaries[i].longitude) <
+    int i, j = WorkBoundaries.length - 1;
+    for (i = 0; i < WorkBoundaries.length; i++) {
+      if ((WorkBoundaries[i].latitude < latitude &&
+                  WorkBoundaries[j].latitude >= latitude ||
+              WorkBoundaries[j].latitude < latitude &&
+                  WorkBoundaries[i].latitude >= latitude) &&
+          (WorkBoundaries[i].longitude <= longitude ||
+              WorkBoundaries[j].longitude <= longitude)) {
+        if (WorkBoundaries[i].longitude +
+                (latitude - WorkBoundaries[i].latitude) /
+                    (WorkBoundaries[j].latitude -
+                        WorkBoundaries[i].latitude) *
+                    (WorkBoundaries[j].longitude -
+                        WorkBoundaries[i].longitude) <
             longitude) {
           isInside = !isInside;
         }
