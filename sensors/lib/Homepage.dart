@@ -9,6 +9,7 @@ import 'package:sensors/pages/compass.dart';
 import 'package:sensors/pages/map_utils.dart';
 import 'package:sensors/pages/step_counter.dart';
 import 'package:light_sensor/light_sensor.dart';
+import 'package:sensors/pages/updated_light_sensor.dart';
 
 
 class Homepage extends StatefulWidget {
@@ -25,35 +26,36 @@ class _HomepageState extends State<Homepage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   //Current brightness level;
-   double _currentLuxValue = 0.0;
-  Brightness _brightness = Brightness.light;
+  // double _currentLuxValue = 0.0;
+  //Brightness _brightness = Brightness.light;
 
   final List<Widget> _pages = [
     MotionDetector(),
     StepsCounterPage(),
-    CompassPage(),
+    BrightnessControl(),
+    //CompassPage(),
     MapPage(),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    listen = LightSensor.luxStream().listen((lux) {
-      print("Lux value: $lux");
-      setState(() {
-        _currentLuxValue = lux.toDouble();
-        print("Double value: $_currentLuxValue");
-        // Adjust brightness based on the lux value
-        _brightness = _currentLuxValue < 20000 ? Brightness.dark : Brightness.light;
-      });
-    }, onError: (error) {
-  print("Error receiving lux data: $error"); // Check if there are any errors
-});
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     listen = LightSensor.luxStream().listen((lux) {
+//       print("Lux value: $lux");
+//       setState(() {
+//         _currentLuxValue = lux.toDouble();
+//         print("Double value: $_currentLuxValue");
+//         // Adjust brightness based on the lux value
+//         _brightness = _currentLuxValue < 20000 ? Brightness.dark : Brightness.light;
+//       });
+//     }, onError: (error) {
+//   print("Error receiving lux data: $error"); // Check if there are any errors
+// });
+//   }
 
   @override
   void dispose() {
-    listen.cancel();
+   // listen.cancel();
     super.dispose();
   }
   @override
@@ -61,7 +63,7 @@ Widget build(BuildContext context) {
   return MaterialApp(
     theme: ThemeData(
       primarySwatch: Colors.blue,
-      brightness: _brightness, // Use the brightness variable here
+     // brightness: _brightness, // Use the brightness variable here
     ),
     home: Scaffold(
       key: _scaffoldKey,
@@ -97,11 +99,11 @@ Widget buildBottomNavigationBar() {
           ),
           GButton(
             icon: Icons.circle,
-            text: 'Motion Detector',
+            text: 'Steps Counter',
           ),
           GButton(
-            icon: Icons.compass_calibration,
-            text: 'Compass',
+            icon: Icons.light,
+            text: 'Light Sensor',
           ),
           GButton(
             icon: Icons.location_city,
